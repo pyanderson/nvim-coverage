@@ -23,7 +23,8 @@ end
 -- @param callback called with the results of the coverage report
 M.load = function(callback)
     local python_config = config.opts.lang.python
-    local p = Path:new(util.get_coverage_file(python_config.coverage_file))
+    local coverage_file = util.get_coverage_file(python_config.coverage_file)
+    local p = Path:new(coverage_file)
     if not p:exists() then
         vim.notify("No coverage data file exists.", vim.log.levels.INFO)
         return
@@ -48,6 +49,10 @@ M.load = function(callback)
     end
     if is_pipenv() then
         cmd = "pipenv run " .. cmd
+    end
+
+    if coverage_file:match("%.json$") then
+        cmd = "cat " .. tostring(p)
     end
 
     local stdout = ""
